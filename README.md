@@ -35,7 +35,7 @@ qsub scripts/run_masurca_JG3.pbs
 
 # 4. Run RagTag (correct + scaffold)
 qsub scripts/run_ragtag_JG2.pbs
-qsub scripts/run_ragtag_JG3_again.pbs
+qsub scripts/run_ragtag_JG3.pbs
 
 # 5. QC
 # quast.py <scaffold.fasta> -r <reference.fasta> -o quast_out --threads 16
