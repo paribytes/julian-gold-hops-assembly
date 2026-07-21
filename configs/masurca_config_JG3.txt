@@ -1,0 +1,41 @@
+# ==========================================================================
+# MaSuRCA config file - JG3
+# Generate the assembly script with:  masurca masurca_config_JG3.txt
+# Then run:                           ./assemble.sh
+# ==========================================================================
+
+DATA
+# pe = two-letter library code, insert size mean, insert size stdev, R1, R2
+# TODO: replace 300 50 with your real mean/stdev insert size.
+# Check JG3_*_summary.json from the sequencing facility first - if it's not
+# there, estimate from a quick FastQC/bbmerge run or ask the facility.
+PE= pe 217 45 /sdm/scratch/priyanshi/julian_gold_assembly/merged_reads/JG3_R1.fastq.gz /sdm/scratch/priyanshi/julian_gold_assembly/merged_reads/JG3_R2.fastq.gz
+END
+
+PARAMETERS
+# Auto-select k-mer size for the deBruijn graph step (recommended default)
+GRAPH_KMER_SIZE = auto
+
+# Set to 1 if you have PE library (helps resolve repeats); leave 1 for PE-only data
+USE_LINKING_MATES = 1
+
+# Illumina-only (no long reads) parameters - leave as default unless you
+# also have PacBio/ONT reads to add as a separate NANOPORE=/PACBIO= line
+LIMIT_JUMP_COVERAGE = 300
+CA_PARAMETERS = cgwErrorRate=0.15
+
+# Threads - match this to what you request in the PBS script below
+NUM_THREADS = 24
+
+# JF_SIZE: rough estimate of (haploid genome size in bp) x 1.1
+# Humulus lupulus is large and repeat-heavy (~2.6-2.8 Gb haploid, published
+# 'Cascade' reference ~2.63 Gb, majority retrotransposon content).
+# Starting estimate: 2.8 Gb x 1.1 ~= 3,080,000,000
+# TODO: if you have a GenomeScope2 estimate for Julian Gold specifically
+# (you've run this before for your 192-sample ploidy work), use that instead.
+JF_SIZE = 3080000000
+
+# Leave these off for a pure short-read Illumina PE assembly
+SOAP_ASSEMBLY = 0
+FLYE_ASSEMBLY = 0
+END

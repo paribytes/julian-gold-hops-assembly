@@ -1,0 +1,55 @@
+#!/bin/bash
+# ==========================================================================
+# PBS job: Fix concatenated FASTA headers in ragtag.scaffold.fasta
+# (headers like '>jcf7180013605...' got stuck onto the end of the previous
+# sequence line without a newline - likely a leftover artifact from the
+# same old-Python FASTA-writing issues we hit earlier)
+#
+# Streams the file line-by-line (not loading the whole 2.6GB file into
+# memory) so this is safe to run even on modest-memory nodes.
+# Submit with:  qsub 10_fix_ragtag_fasta_headers.pbs
+# ==========================================================================
+#PBS -N fix_ragtag_fasta
+#PBS -l nodes=1:node21:ppn=5
+#PBS -l walltime=200:00:00
+#PBS -j oe
+#PBS -o fix_ragtag_fasta.log
+
+BASE_DIR=/usr/scratch/priyanshi/julian_gold_assembly/JG3_ragtag/scaffold
+cd $BASE_DIR
+
+python3 << 'PYEOF'
+infile = "ragtag.scaffold.fasta"
+outfile = "ragtag.scaffold.fixed.fasta"
+
+CHUNK_SIZE = 10 * 1024 * 1024  # 10MB chunks
+
+bytes_processed = 0
+fixes_made = 0
+prev_char_was_newline = True  # start of file counts as "after a newline"
+
+with open(infile, 'r') as fin, open(outfile, 'w') as fout:
+    while True:
+        chunk = fin.read(CHUNK_SIZE)
+        if not chunk:
+            break
+
+        out_chunk = []
+        for ch in chunk:
+            if ch == '>' and not prev_char_was_newline:
+                out_chunk.append('\n')
+                fixes_made += 1
+            out_chunk.append(ch)
+            prev_char_was_newline = (ch == '\n')
+
+        fout.write(''.join(out_chunk))
+        bytes_processed += len(chunk)
+
+        print(f"Processed {bytes_processed / (1024*1024):.1f} MB, fixes so far: {fixes_made}", flush=True)
+
+print(f"Done. Total bytes processed: {bytes_processed}, total fixes made: {fixes_made}")
+PYEOF
+
+echo "Fix complete. Verifying output..."
+grep -c "b'" ${BASE_DIR}/ragtag.scaffold.fixed.fasta
+head -c 500 ${BASE_DIR}/ragtag.scaffold.fixed.fasta

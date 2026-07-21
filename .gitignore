@@ -1,0 +1,26 @@
+# Sequencing data
+*.fastq
+*.fastq.gz
+*.fasta
+*.fa
+*.fa.fai
+*.bam
+*.sam
+*.paf
+
+# Logs and job output
+*.log
+*.OU
+*.ER
+
+# MaSuRCA/RagTag working directories
+*_assembly/
+*_ragtag/
+merged_reads/
+quast_*/
+busco_downloads/
+
+# Misc
+*.pyc
+__pycache__/
+.DS_Store

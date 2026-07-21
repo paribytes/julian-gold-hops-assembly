@@ -1,0 +1,36 @@
+#!/bin/bash
+# ==========================================================================
+# PBS job: MaSuRCA assembly for JG2 on ram512
+# Submit with:  qsub run_masurca_JG2.pbs
+#
+# ram512: 20 cores, ~490GB RAM, confirmed to have /usr/scratch/priyanshi
+# mounted correctly (unlike ram15tb, which had no shared storage at all).
+# Still comfortably above the ~97GB allocation that OOM'd on the 16-core/
+# 126GB SLURM nodes.
+# ==========================================================================
+#PBS -N julian_gold2
+#PBS -l nodes=1:r512:ppn=20
+#PBS -l walltime=900:00:00
+#PBS -j oe
+#PBS -o masurca_JG2.log
+
+BASE_DIR=/sdm/scratch/priyanshi/julian_gold_assembly  
+cd $BASE_DIR
+
+source ~/.bashrc
+mamba activate masurca
+
+echo "Starting MaSuRCA assembly for JG2 on $(hostname)"
+
+mkdir -p ${BASE_DIR}/JG2_assembly
+cd ${BASE_DIR}/JG2_assembly
+
+ln -sf ${BASE_DIR}/masurca_config_JG2.txt .
+
+masurca masurca_config_JG2.txt
+chmod +x assemble.sh
+./assemble.sh
+
+echo "Finished MaSuRCA assembly for JG2"
+echo "Final assembly should be at: JG2_assembly/CA/*.fasta"
+echo "(check assemble.sh output for exact final name, usually final.genome.scf.fasta)"

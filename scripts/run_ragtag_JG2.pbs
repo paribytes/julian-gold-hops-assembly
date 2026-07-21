@@ -1,0 +1,50 @@
+#!/bin/bash
+# ==========================================================================
+# PBS job: RagTag correct + scaffold for JG2 against the hops reference
+# Submit with:  qsub 07_run_ragtag_JG2.pbs
+#
+# Uses the same ragtag env as JG3, which already has the pysam bytes/str
+# patch applied to ragtag_utilities/utilities.py - no need to patch again.
+# ==========================================================================
+#PBS -N julian_gold2_rt
+#PBS -l nodes=1:node21:ppn=16
+#PBS -l walltime=900:00:00
+#PBS -j oe
+#PBS -o ragtag_JG2.log
+
+BASE_DIR=/usr/scratch/priyanshi/julian_gold_assembly
+cd $BASE_DIR
+
+source ~/.bashrc
+mamba activate ragtag
+
+REFERENCE=/sdm/scratch/priyanshi/RefHopsGenomeHudAl/Humulus_lupulus_lupulus_21110M_HAP2_v1.0.fa
+
+QUERY=${BASE_DIR}/JG2_assembly/CA/primary.genome.scf.fasta
+
+if [ ! -f "$QUERY" ]; then
+    echo "ERROR: could not find $QUERY - check MaSuRCA finished and filename matches"
+    exit 1
+fi
+
+OUTDIR=${BASE_DIR}/JG2_ragtag
+mkdir -p $OUTDIR
+
+echo "Running ragtag correct for JG2 ..."
+ragtag.py correct \
+    $REFERENCE \
+    $QUERY \
+    -o ${OUTDIR}/correct \
+    -t 16
+
+echo "Running ragtag scaffold for JG2 ..."
+ragtag.py scaffold \
+    $REFERENCE \
+    ${OUTDIR}/correct/ragtag.correct.fasta \
+    -o ${OUTDIR}/scaffold \
+    -t 16
+
+echo "Done. Final scaffolded assembly for JG2:"
+echo "  ${OUTDIR}/scaffold/ragtag.scaffold.fasta"
+echo "Scaffolding stats/confidence scores:"
+echo "  ${OUTDIR}/scaffold/ragtag.scaffold.stats"
