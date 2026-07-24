@@ -19,6 +19,31 @@ RagTag for reference-guided scaffolding.
 - fastp, QUAST, BUSCO (installed in separate conda envs — see `scripts/`)
 - A chromosome-scale *H. lupulus* reference genome (not included in this repo — see Data section)
 
+## Compute Environment
+
+- This pipeline was run on an institutional HPC cluster using the PBS/Torque
+scheduler. Job scripts in `scripts/` use PBS directives (`#PBS -l nodes=...`)
+and will need adjustment for other schedulers (SLURM, etc.) or institutional
+node-naming conventions.
+
+### Notable resource requirements learned during this run:
+- **MaSuRCA's super-reads step** requires a single memory allocation on the
+  order of ~100GB for a genome this size (~2.3-2.6 Gb, repeat-rich). Standard
+  compute nodes with ~128GB total RAM are not sufficient headroom; a
+  high-memory node (several hundred GB+) is recommended.
+  
+- **MaSuRCA's CGW (scaffold graph) step** is single-threaded and can run for
+  multiple days on a genome this size/complexity.
+  
+- **Job interruption during CGW**: if a MaSuRCA job is killed mid-CGW (e.g.,
+  by scheduled cluster maintenance), the CGW checkpoint may be left in a
+  corrupted state that segfaults on resume rather than resuming cleanly.
+  Symptoms include implausible values in `cgw.out` logs (e.g., scaffold
+  lengths many orders of magnitude too large) followed by a segfault. If
+  this happens, back up and remove the `CA/7-0-CGW/` directory before
+  resubmitting to force a clean rebuild of that stage — do not trust a
+  resumed checkpoint after an abrupt kill.
+
 ## Directory structure
 
 - configs/    MaSuRCA config files (per sample)
@@ -26,19 +51,23 @@ RagTag for reference-guided scaffolding.
 
 ## Run order
 
-```bash
-# 1. Concatenate lanes (see scripts/ for the concat script)
-# 2. Get insert size from fastp, update configs/masurca_config_*.txt
-# 3. Run MaSuRCA
+1. Concatenate lanes (see `scripts/` for the concat script)
+
+2. Get insert size from fastp, update configs/masurca_config_*.txt
+
+3. Run MaSuRCA
+```
 qsub scripts/run_masurca_JG2.pbs
 qsub scripts/run_masurca_JG3.pbs
-
-# 4. Run RagTag (correct + scaffold)
+```
+4. Run RagTag (correct + scaffold)
+```
 qsub scripts/run_ragtag_JG2.pbs
 qsub scripts/run_ragtag_JG3.pbs
-
-# 5. QC
-# quast.py <scaffold.fasta> -r <reference.fasta> -o quast_out --threads 16
+```
+5. QC
+```
+quast.py <scaffold.fasta> -r <reference.fasta> -o quast_out --threads 16
 ```
 
 ## Data
