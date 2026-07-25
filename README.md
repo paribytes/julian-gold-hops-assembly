@@ -13,11 +13,12 @@ RagTag for reference-guided scaffolding.
 5. Assess quality with QUAST (BUSCO/Merqury planned)
 
 ## Requirements
-
-- MaSuRCA v4.1.4 (`mamba create -n masurca -c bioconda -c conda-forge masurca`)
-- RagTag v2.1.0 (`mamba create -n ragtag -c bioconda -c conda-forge ragtag`)
-- fastp, QUAST, BUSCO (installed in separate conda envs — see `scripts/`)
-- A chromosome-scale *H. lupulus* reference genome (not included in this repo — see Data section)
+```
+mamba create -n masurca -c bioconda -c conda-forge masurca=4.1.4
+mamba create -n ragtag -c bioconda -c conda-forge ragtag=2.1.0
+# fastp and QUAST installed in separate conda envs — see scripts/
+```
+- A chromosome-scale *H. lupulus* reference genome is required but not included (see Data section).
 
 ## Compute Environment
 
@@ -41,8 +42,8 @@ node-naming conventions.
   Symptoms include implausible values in `cgw.out` logs (e.g., scaffold
   lengths many orders of magnitude too large) followed by a segfault. If
   this happens, back up and remove the `CA/7-0-CGW/` directory before
-  resubmitting to force a clean rebuild of that stage — do not trust a
-  resumed checkpoint after an abrupt kill.
+  resubmitting to force a clean rebuild of that stage — **do not trust a
+  resumed checkpoint after an abrupt kill.**
 
 ## Directory structure
 
@@ -53,7 +54,7 @@ node-naming conventions.
 
 1. Concatenate lanes (see `scripts/` for the concat script)
 
-2. Get insert size from fastp, update configs/masurca_config_*.txt
+2. Estimate insert size with fastp, update configs/masurca_config_*.txt
 
 3. Run MaSuRCA
 ```
@@ -82,6 +83,7 @@ to version this way. They live on cluster scratch storage.
   more memory than expected for a genome this size/repeat-content (~97GB+
   single allocation). Use high-memory nodes (`ram512`, or similar), not
   standard compute nodes.
+  
 - **RagTag + old pysam bug**: the `ragtag` conda environment on this cluster
   resolved to `pysam 0.8.3` (very old — glibc 2.17 constraint prevents
   installing a modern pysam here). This causes `fai.fetch()` to return
@@ -93,6 +95,7 @@ to version this way. They live on cluster scratch storage.
   reinstall/recreate the `ragtag` env, **these patches will be lost** and
   need to be reapplied (or pin an older pysam / find a version combo that
   doesn't hit this).
+  
 - **Stale `.fai` index**: if you ever regenerate a FASTA file in place
   (e.g., after fixing the above bug), **delete the old `.fai` index**
   before re-running anything that reads it with pysam. A stale index will
