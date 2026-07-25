@@ -1,11 +1,5 @@
 #!/bin/bash
-# ==========================================================================
-# PBS job: MaSuRCA assembly for JG3 on the high-memory ram2tb node
-# Submit with:  qsub 06_run_masurca_JG3_ramnode.pbs
-#
-# Using ram2tb (not ram15tb) so JG3 runs in parallel with JG2, rather than
-# both queueing for the same single r15tb node one after another.
-# ==========================================================================
+
 #PBS -N julian_gold3
 #PBS -l nodes=1:node21:ppn=24
 #PBS -l walltime=900:00:00
