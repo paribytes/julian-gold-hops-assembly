@@ -1,11 +1,5 @@
 #!/bin/bash
-# ==========================================================================
-# PBS job: RagTag scaffold-only rerun for JG3
-# (correct step already completed successfully - only rerunning scaffold,
-# which crashed due to a pysam bytes/str bug in ragtag_utilities/utilities.py,
-# now patched)
-# Submit with:  qsub 07b_run_ragtag_scaffold_only_JG3.pbs
-# ==========================================================================
+
 #PBS -N julian_gold3_rt
 #PBS -l nodes=1:node21:ppn=16
 #PBS -l walltime=900:00:00
@@ -18,7 +12,7 @@ cd $BASE_DIR
 source ~/.bashrc
 mamba activate ragtag
 
-# ---- Same reference used for the correct step ----
+# Same reference used for the correct step
 REFERENCE=/sdm/scratch/priyanshi/RefHopsGenomeHudAl/Humulus_lupulus_lupulus_21110M_HAP2_v1.0.fa
 
 CORRECTED_FASTA=${BASE_DIR}/JG3_ragtag/correct/ragtag.correct.fasta
@@ -28,8 +22,7 @@ if [ ! -f "$CORRECTED_FASTA" ]; then
     exit 1
 fi
 
-# Remove the old failed scaffold output before rerunning, so RagTag doesn't
-# get confused by partial/stale files from the crashed attempt
+# Remove the old failed scaffold output before rerunning, so RagTag doesn't get confused by partial/stale files from the crashed attempt
 rm -rf ${BASE_DIR}/JG3_ragtag/scaffold
 
 echo "Running ragtag scaffold for JG3 (retry after pysam patch) ..."
