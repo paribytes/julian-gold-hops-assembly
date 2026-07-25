@@ -1,11 +1,5 @@
 #!/bin/bash
-# ==========================================================================
-# PBS job: RagTag correct + scaffold for JG2 against the hops reference
-# Submit with:  qsub 07_run_ragtag_JG2.pbs
-#
-# Uses the same ragtag env as JG3, which already has the pysam bytes/str
-# patch applied to ragtag_utilities/utilities.py - no need to patch again.
-# ==========================================================================
+
 #PBS -N julian_gold2_rt
 #PBS -l nodes=1:node21:ppn=16
 #PBS -l walltime=900:00:00
