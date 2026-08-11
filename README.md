@@ -23,6 +23,38 @@ RagTag for reference-guided scaffolding.
 - [dotPlotly](https://github.com/tpoorten/dotPlotly) for synteny dot plots
 - A chromosome-scale *H. lupulus* reference genome (not included in this repo — see Data section)
 
+```
+mamba create -n masurca -c bioconda -c conda-forge masurca=4.1.4
+mamba create -n ragtag -c bioconda -c conda-forge ragtag=2.1.0
+# fastp and QUAST installed in separate conda envs — see scripts/
+```
+- A chromosome-scale *H. lupulus* reference genome is required but not included (see Data section).
+
+## Compute Environment
+
+- This pipeline was run on an institutional HPC cluster using the PBS/Torque
+scheduler. Job scripts in `scripts/` use PBS directives (`#PBS -l nodes=...`)
+and will need adjustment for other schedulers (SLURM, etc.) or institutional
+node-naming conventions.
+
+### Notable resource requirements learned during this run:
+- **MaSuRCA's super-reads step** requires a single memory allocation on the
+  order of ~100GB for a genome this size (~2.3-2.6 Gb, repeat-rich). Standard
+  compute nodes with ~128GB total RAM are not sufficient headroom; a
+  high-memory node (several hundred GB+) is recommended.
+  
+- **MaSuRCA's CGW (scaffold graph) step** is single-threaded and can run for
+  multiple days on a genome this size/complexity.
+  
+- **Job interruption during CGW**: if a MaSuRCA job is killed mid-CGW (e.g.,
+  by scheduled cluster maintenance), the CGW checkpoint may be left in a
+  corrupted state that segfaults on resume rather than resuming cleanly.
+  Symptoms include implausible values in `cgw.out` logs (e.g., scaffold
+  lengths many orders of magnitude too large) followed by a segfault. If
+  this happens, back up and remove the `CA/7-0-CGW/` directory before
+  resubmitting to force a clean rebuild of that stage — **do not trust a
+  resumed checkpoint after an abrupt kill.**
+
 ## Compute environment
 
 This pipeline was run on an institutional HPC cluster using the PBS/Torque
@@ -64,12 +96,21 @@ bash scripts/concat_lanes.sh
 # 2. Get insert size from fastp, update configs/masurca_config_*.txt
 
 # 3. Run MaSuRCA
+
+1. Concatenate lanes (see `scripts/` for the concat script)
+
+2. Estimate insert size with fastp, update configs/masurca_config_*.txt
+
+3. Run MaSuRCA
+```
 qsub scripts/run_masurca_JG2.pbs
 qsub scripts/run_masurca_JG3.pbs
-
-# 4. Run RagTag (correct + scaffold)
+```
+4. Run RagTag (correct + scaffold)
+```
 qsub scripts/run_ragtag_JG2.pbs
 qsub scripts/run_ragtag_JG3.pbs
+
 # NOTE: apply patches in patches/ to the ragtag conda env first - see Known issues
 
 # 5. QUAST
@@ -81,6 +122,12 @@ qsub scripts/run_busco_JG3.pbs
 
 # 7. Synteny plot
 bash scripts/run_synteny_analysis.sh
+
+```
+5. QC
+```
+quast.py <scaffold.fasta> -r <reference.fasta> -o quast_out --threads 16
+
 ```
 
 ## QC Results (JG3)
