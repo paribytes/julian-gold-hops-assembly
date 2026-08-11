@@ -1,0 +1,22 @@
+#!/bin/bash
+#PBS -N busco_JG3
+#PBS -l nodes=1:r15tb:ppn=48
+#PBS -l walltime=900:00:00
+#PBS -j oe
+#PBS -o busco_JG3.log
+
+BASE_DIR=/usr/scratch/priyanshi/julian_gold_assembly/JG3_ragtag/scaffold
+cd $BASE_DIR
+
+source ~/.bashrc
+mamba activate busco
+
+busco -i ragtag.scaffold.fasta \
+    -l /usr/scratch/priyanshi/julian_gold_assembly/busco_downloads/embryophyta_odb10 \
+    -o JG3_busco \
+    -m genome \
+    --cpu 48 \
+    --offline
+
+echo "BUSCO complete. Report at:"
+echo "  ${BASE_DIR}/JG3_busco/short_summary*.txt"

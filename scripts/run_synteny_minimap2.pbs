@@ -1,0 +1,19 @@
+#!/bin/bash
+#PBS -N synteny_minimap2
+#PBS -l nodes=1:ppn=16
+#PBS -l walltime=900:00:00
+#PBS -j oe
+#PBS -o synteny_minimap2.log
+
+BASE_DIR=/usr/scratch/priyanshi/julian_gold_assembly/JG3_ragtag/scaffold
+cd $BASE_DIR
+
+source ~/.bashrc
+mamba activate ragtag
+
+minimap2 -x asm5 -t 16 --no-long-join \
+    /sdm/scratch/priyanshi/RefHopsGenomeHudAl/Humulus_lupulus_lupulus_21110M_HAP2_v1.0.fa \
+    ragtag.scaffold.placed_only.fasta \
+    > JG3_vs_ref_nolongjoin.paf
+
+echo "Minimap2 alignment complete. Output: JG3_vs_ref_nolongjoin.paf"

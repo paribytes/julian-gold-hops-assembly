@@ -1,0 +1,26 @@
+#!/bin/bash
+#PBS -N quast_JG3_v3
+#PBS -l nodes=1:r15tb:ppn=24
+#PBS -l walltime=900:00:00
+#PBS -j oe
+#PBS -o quast_JG3_v3.log
+
+BASE_DIR=/usr/scratch/priyanshi/julian_gold_assembly/JG3_ragtag/scaffold
+cd $BASE_DIR
+
+source ~/.bashrc
+mamba activate quast
+
+rm -rf quast_JG3
+
+quast.py ragtag.scaffold.fasta \
+    -r /sdm/scratch/priyanshi/RefHopsGenomeHudAl/Humulus_lupulus_lupulus_21110M_HAP2_v1.0.fa \
+    -o quast_JG3_v3 \
+    --threads 24 \
+    --fragmented \
+    --min-contig 1000 \
+    --extensive-mis-size 10000 \
+    --unaligned-part-size 5000
+
+echo "QUAST complete. Report at:"
+echo "  ${BASE_DIR}/quast_JG3_v3/report.txt"
