@@ -1,4 +1,3 @@
-
 # MaSuRCA config file - JG3
 # Generate the assembly script with: masurca masurca_config_JG3.txt
 # Then run: ./assemble.sh
