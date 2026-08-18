@@ -4,8 +4,7 @@
 # Uses NCBI's FCS-adaptor (v0.5.5) via Apptainer/Singularity (v1.5.3).
 #
 # NOTE: fcs.py clean genome applies NCBI's standard 200bp minimum contig length filter as a side effect of cleaning - this removes short unplaced
-# fragments in addition to actual adapter-contaminated sequence. Verified this is intentional/standard behavior, not data corruption - see repo
-# README Known Issues for details.
+# fragments in addition to actual adapter-contaminated sequence. Verified this is intentional/standard behavior, not data corruption - see repo README Known Issues for details.
 
 set -euo pipefail
 
