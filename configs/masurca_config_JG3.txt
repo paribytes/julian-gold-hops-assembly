@@ -1,15 +1,12 @@
-# ==========================================================================
 # MaSuRCA config file - JG3
 # Generate the assembly script with: masurca masurca_config_JG3.txt
 # Then run: ./assemble.sh
-# ==========================================================================
 
 DATA
 # pe = two-letter library code, insert size mean, insert size stdev, R1, R2
 # replace 217 45 with your real mean/stdev insert size.
 
-# Check JG3_*_summary.json from the sequencing run first - if it's not
-# there, estimate from a quick FastQC/bbmerge run.
+# Check JG3_*_summary.json from the sequencing run first - if it's not there, estimate from a quick FastQC/bbmerge run.
 
 PE= pe 217 45 /sdm/scratch/priyanshi/julian_gold_assembly/merged_reads/JG3_R1.fastq.gz /sdm/scratch/priyanshi/julian_gold_assembly/merged_reads/JG3_R2.fastq.gz
 END
@@ -21,12 +18,11 @@ GRAPH_KMER_SIZE = auto
 # Set to 1 if you have PE library (helps resolve repeats); leave 1 for PE-only data
 USE_LINKING_MATES = 1
 
-# Illumina-only (no long reads) parameters - leave as default unless you
-# also have PacBio/ONT reads to add as a separate NANOPORE=/PACBIO= line
+# Illumina-only (no long reads) parameters - leave as default unless you also have PacBio/ONT reads to add as a separate NANOPORE=/PACBIO= line
 LIMIT_JUMP_COVERAGE = 300
 CA_PARAMETERS = cgwErrorRate=0.15
 
-# Threads - match this to what you request in the PBS script below
+# Threads - match this to what you request in the PBS script
 NUM_THREADS = 24
 
 # JF_SIZE: rough estimate of (haploid genome size in bp) x 1.1
