@@ -224,3 +224,4 @@ to version this way. They live on cluster scratch storage.
 - BUSCO: Simão et al. 2015
 - minimap2: Li 2018
 - dotPlotly: https://github.com/tpoorten/dotPlotly
+- FCS: https://github.com/ncbi/fcs
