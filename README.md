@@ -12,6 +12,7 @@ RagTag for reference-guided scaffolding.
 4. Scaffold against a chromosome-scale *H. lupulus* reference with RagTag v2.1.0
 5. Assess quality with QUAST v5.0.2 and BUSCO v4.1.4
 6. Generate a whole-genome synteny plot against the reference
+7. Screen and clean adapter contamination with NCBI FCS-adaptor v0.5.5
 
 ## Requirements
 
@@ -21,6 +22,8 @@ RagTag for reference-guided scaffolding.
 - minimap2 (bundled with the `ragtag` env)
 - R with `ggplot2`, `plotly`, `optparse` (for synteny plotting) — install via `mamba install -c conda-forge r-ggplot2 r-plotly r-optparse`
 - [dotPlotly](https://github.com/tpoorten/dotPlotly) for synteny dot plots
+- NCBI FCS-adaptor v0.5.5 and FCS-GX `.sif` image (for contamination screening — see `scripts/run_contamination_screening.sh`)
+- Apptainer/Singularity (for FCS-adaptor/FCS-GX; not always available on login nodes — check compute nodes)
 - A chromosome-scale *H. lupulus* reference genome (not included in this repo — see Data section)
 
 ```
@@ -90,6 +93,11 @@ qsub scripts/run_busco_JG3.pbs
 
 # 7. Synteny plot
 bash scripts/run_synteny_analysis.sh
+
+# 8. Contamination screening and cleaning
+bash scripts/run_contamination_screening.sh
+# NOTE: requires Apptainer/Singularity - check availability on compute nodes if not on the login node (see Known issues)
+
 ```
 
 ## QC Results (JG3)
@@ -192,7 +200,7 @@ to version this way. They live on cluster scratch storage.
   `export FCS_DEFAULT_IMAGE=fcs-gx.sif` instead — this requires
   downloading the separate FCS-GX image, even for basic adapter cleaning.
   Sometimes login nodes do not have Apptainer/Singularity available on them
-  so check if your compute nodes have those or not. 
+  so always check compute nodes. 
 
 - **FCS-adaptor rejects zero-length sequences**: 363 zero-length sequence
   records (artifacts of RagTag's `correct` step) caused immediate
