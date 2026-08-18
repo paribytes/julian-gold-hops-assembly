@@ -206,7 +206,7 @@ to version this way. They live on cluster scratch storage.
   records (artifacts of RagTag's `correct` step) caused immediate
   validation failure. Fixed with `seqkit seq -m 1` before screening.
 
-  - **`fcs.py clean genome` applies an undocumented minimum-length filter**:
+- **`fcs.py clean genome` applies an undocumented minimum-length filter**:
   in addition to applying trim/exclude actions from the adaptor report,
   this command also silently drops all sequences under ~200bp (NCBI's
   standard GenBank minimum contig length), even when only an adapter
